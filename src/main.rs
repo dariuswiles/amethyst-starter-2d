@@ -19,23 +19,16 @@ fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
 
     let app_root = application_root_dir()?;
-
     let resources = app_root.join("assets");
-    let key_bindings_path = app_root.join("config/input.ron");
 
     let mut display_config = DisplayConfig::default();
     display_config.title = "Amethyst Starter 2D template (Simplified for debugging)".to_string();
     display_config.dimensions = Some((800, 600));
 
 
-
-
-
     let game_data = GameDataBuilder::default()
         .with_bundle(TransformBundle::new())?
-        .with_bundle(
-            InputBundle::<StringBindings>::new().with_bindings_from_file(&key_bindings_path)?,
-        )?
+        .with_bundle(InputBundle::<StringBindings>::new())?
         .with_bundle(UiBundle::<StringBindings>::new())?
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
