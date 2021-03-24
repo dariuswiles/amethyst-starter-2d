@@ -1,17 +1,10 @@
 use amethyst::{
     assets::{AssetStorage, Loader},
     core::transform::Transform,
-    input::{get_key, is_close_requested, is_key_down, VirtualKeyCode},
     prelude::*,
     renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
-    ui::{
-        Anchor, FontHandle, LineMode, Stretch, TtfFormat, UiButtonBuilder, UiImage, UiText,
-        UiTransform,
-    },
     window::ScreenDimensions,
 };
-
-use log::info;
 
 /// A dummy game state that shows 3 sprites.
 pub struct MyState;
@@ -42,36 +35,6 @@ impl SimpleState for MyState {
         // Load our sprites and display them
         let sprites = load_sprites(world);
         init_sprites(world, &sprites, &dimensions);
-
-        create_ui_example(world);
-    }
-
-    /// The following events are handled:
-    /// - The game state is quit when either the close button is clicked or when the escape key is pressed.
-    /// - Any other keypress is simply logged to the console.
-    fn handle_event(
-        &mut self,
-        mut _data: StateData<'_, GameData<'_, '_>>,
-        event: StateEvent,
-    ) -> SimpleTrans {
-        if let StateEvent::Window(event) = &event {
-            // Check if the window should be closed
-            if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
-                return Trans::Quit;
-            }
-
-            // Listen to any key events
-            if let Some(event) = get_key(&event) {
-                info!("handling key event: {:?}", event);
-            }
-
-            // If you're looking for a more sophisticated event handling solution,
-            // including key bindings and gamepad support, please have a look at
-            // https://book.amethyst.rs/stable/pong-tutorial/pong-tutorial-03.html#capturing-user-input
-        }
-
-        // Keep going
-        Trans::None
     }
 }
 
@@ -153,57 +116,4 @@ fn init_sprites(world: &mut World, sprites: &[SpriteRender], dimensions: &Screen
             .with(transform)
             .build();
     }
-}
-
-/// Creates a solid color UI background and a UI text label over it.
-/// This is the pure code only way to create UI with amethyst.
-pub fn create_ui_example(world: &mut World) {
-    // Create a pink rectangle to be the background for the UI text label.
-    let ui_background = world
-        .create_entity()
-        .with(UiImage::SolidColor([0.6, 0.1, 0.2, 1.0]))
-        .with(UiTransform::new(
-            "".to_string(),
-            Anchor::TopLeft,
-            Anchor::TopLeft,
-            30.0,
-            -30.,
-            0.,
-            250.,
-            50.,
-        ))
-        .build();
-
-    // This simply loads a font from the asset folder and puts it in the world as a resource,
-    // we also get a ref to the font that we then can pass to the text label we crate later.
-    let font: FontHandle = world.read_resource::<Loader>().load(
-        "fonts/Bangers-Regular.ttf",
-        TtfFormat,
-        (),
-        &world.read_resource(),
-    );
-
-    // This creates the actual label and places it on the screen.
-    // Take note of the z position given, this ensures the label gets rendered above the background UI element.
-    world
-        .create_entity()
-        .with(UiTransform::new(
-            "".to_string(),
-            Anchor::TopLeft,
-            Anchor::TopLeft,
-            40.0,
-            -40.,
-            1.,
-            200.,
-            50.,
-        ))
-        .with(UiText::new(
-            font,
-            "Hello, Amethyst UI!".to_string(),
-            [1., 1., 1., 1.],
-            30.,
-            LineMode::Single,
-            Anchor::TopLeft,
-        ))
-        .build();
 }
